@@ -1,9 +1,15 @@
 const express = require('express');
 
+const postsRouter = require('./posts/postRouter.js');
+const usersRouter = require('./users/userRouter.js');
+
 const server = express();
 
 server.use(express.json());
-server.use(logger)
+server.use(logger);
+
+server.use('api/posts', postsRouter);
+server.use('api/users', usersRouter)
 
 server.get('/', (req, res) => {
   res.send(`<h2>Let's write some middleware!</h2>`);
@@ -16,35 +22,6 @@ function logger(req, res, next) {
   console.log(`${method} to ${originalUrl}`);
 
   next();
-}
-
-function validateUserId(req, res, next) {
-  if (req.id){
-    req.user = req.id;
-    next()
-  }else{
-    res.status(400).json({ message: 'Invalid user id'})
-  }
-}
-
-function validateUser(res, req, next) {
-  if (req.body){
-    next()
-  }else if (req.body && !req.body.name) {
-    res.status(400).json({ message: 'Missing required name field'})
-  }else {
-    res.status(400).json({ message: 'Missing required user data'})
-  }
-}
-
-function validatePost(res, req, next) {
-  if (req.body){
-    next()
-  }else if (req.body && !req.body.text) {
-    res.status(400).json({ message: 'Missing required text field'})
-  }else {
-    res.status(400).json({ message: 'Missing required post data'})
-  }
 }
 
 module.exports = server;
