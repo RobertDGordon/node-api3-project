@@ -2,7 +2,7 @@ const express = require('express');
 
 const Posts = require('./userDb.js');
 
-const validateUserId = require('../middleware');
+const middleware = require('../middleware/index.js');
 
 const router = express.Router();
 router.get('/', (req, res) => {
@@ -54,8 +54,17 @@ router.get('/:id/posts', (req, res) => {
     })
 });
 
-router.post('/', (req, res) => {
-  // do your magic!
+router.post('/', middleware.validateUser('name'), (req, res) => {
+Posts.insert(req.body)
+  .then(post => {
+    res.status(201).json(post);
+  })
+  .catch(error => {
+    console.log(error);
+    res.status(500).json({
+      message: "There was an error while saving the post to the database",
+    });
+  });
 });
 
 router.post('/:id/posts', (req, res) => {
